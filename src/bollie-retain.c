@@ -216,8 +216,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                 if (pos_w < n_fade_samples) {
                     coeff = 1/n_fade_samples * pos_w;
                 }
-                else if (pos_w > n_loop_samples - n_fade_samples) {
-                    coeff = 1/n_fade_samples * (n_fade_samples - pos_w);
+                else if (pos_w >= n_loop_samples - n_fade_samples) {
+                    coeff = 1/n_fade_samples * (n_loop_samples - pos_w);
                 }
 
                 self->buffer_l[pos_w] = cur_s_l * coeff;
