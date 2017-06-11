@@ -32,7 +32,7 @@
 
 #define URI "https://ca9.eu/lv2/bollieretain"
 
-#define MAX_TAPE_LEN 192000
+#define MAX_TAPE_LEN 960000
 
 
 /**
