@@ -97,7 +97,7 @@ static LV2_Handle instantiate(const LV2_Descriptor * descriptor, double rate,
 
     // Memorize sample rate for calculation
     self->rate = rate;
-    self->n_fade_samples = ceil(0.05f * rate);
+    self->n_fade_samples = ceil(0.2f * rate);
     self->n_loop_samples = ceil(0.5f * rate);
 
     return (LV2_Handle)self;
@@ -226,6 +226,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
             else {
                 listening = false;
                 looping = true;
+                pos_w = 0;
             }
         }
         else if (looping) {
