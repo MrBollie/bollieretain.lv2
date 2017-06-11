@@ -221,9 +221,13 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                 else if (pos_w >= n_loop_samples - n_fade_samples) {
                     coeff = 1/n_fade_samples * (n_loop_samples-1 - pos_w);
                 }
+                else {
+                    coeff = 1;
+                }
 
                 self->buffer_l[pos_w] = cur_s_l * coeff;
-                self->buffer_r[pos_w++] = cur_s_r * coeff;;
+                self->buffer_r[pos_w] = cur_s_r * coeff;
+                ++pos_w;
             }
             else {
                 listening = false;
@@ -244,7 +248,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                 wet_s_r = self->buffer_r[pos_r];
             /*
             }*/
-            pos_r++;
+            ++pos_r;
             // reset to fade offset at the end of the buffer
             if (pos_r >= n_loop_samples) {
                 if (listening) {
