@@ -232,7 +232,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
         else if (looping) {
             // buffer size - fade offset needs a crossfade
             if (pos_r >= n_loop_samples - n_fade_samples && !listening) {
-                int p = pos_r - n_loop_samples - n_fade_samples; 
+                int p = pos_r - (n_loop_samples - n_fade_samples); 
                 wet_s_l = self->buffer_l[pos_r] + self->buffer_l[p];
                 wet_s_r = self->buffer_r[pos_r] + self->buffer_r[p];
             }
