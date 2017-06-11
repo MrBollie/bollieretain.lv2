@@ -6,7 +6,6 @@
         modgui:resourcesDirectory <modgui> ;
         modgui:iconTemplate <modgui/bollieretain.html> ;
         modgui:stylesheet <modgui/bollieretain.css> ;
-        modgui:javascript <modgui/bollieretain.js> ;
         modgui:screenshot <modgui/screenshot-bollie-retain.png> ;
         modgui:thumbnail <modgui/thumbnail-bollie-retain.png> ;
         modgui:brand "Bollie" ;
