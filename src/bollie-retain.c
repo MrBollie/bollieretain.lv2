@@ -233,16 +233,17 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
         }
         else if (looping) {
             // buffer size - fade offset needs a crossfade
-            if (pos_r >= n_loop_samples - n_fade_samples && !listening) {
+            /*if (pos_r >= n_loop_samples - n_fade_samples && !listening) {
                 int p = pos_r - (n_loop_samples - n_fade_samples); 
                 wet_s_l = self->buffer_l[pos_r] + self->buffer_l[p];
                 wet_s_r = self->buffer_r[pos_r] + self->buffer_r[p];
             }
-            else {
+            else { */
                 // Simply copy
                 wet_s_l = self->buffer_l[pos_r];
                 wet_s_r = self->buffer_r[pos_r];
-            }
+            /*
+            }*/
             pos_r++;
             // reset to fade offset at the end of the buffer
             if (pos_r >= n_loop_samples) {
@@ -251,7 +252,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                     pos_r = 0;
                 }
                 else {
-                    pos_r = n_fade_samples;
+                    //pos_r = n_fade_samples;
+                    pos_r = 0;
                 }
             }
         }
