@@ -46,11 +46,13 @@ typedef enum { false, true } bool;
 */
 typedef enum {
     BRT_BLEND       = 0,
-    BRT_TRIGGER     = 1,
-    BRT_INPUT_L     = 2,
-    BRT_INPUT_R     = 3,
-    BRT_OUTPUT_L    = 4,
-    BRT_OUTPUT_R    = 5,
+    BRT_LENGTH      = 1,
+    BRT_FADE        = 2,
+    BRT_TRIGGER     = 3,
+    BRT_INPUT_L     = 4,
+    BRT_INPUT_R     = 5,
+    BRT_OUTPUT_L    = 6,
+    BRT_OUTPUT_R    = 7,
 } PortIdx;
 
 
@@ -58,8 +60,10 @@ typedef enum {
 * Struct for THE BollieRetain instance, the host is going to use.
 */
 typedef struct {
-    const float* ctl_blend;     ///< Tempo in BPM from host
-    const float* ctl_trigger;   ///< Tempo in BPM set by user
+    const float* ctl_blend;     ///< blend
+    const float* ctl_length;    ///< Loop length in ms
+    const float* ctl_fade;      ///< fade in percent
+    const float* ctl_trigger;   ///< Trigger to start listening
     const float* input_l;       ///< input0, left side
     const float* input_r;       ///< input1, right side
     float* output_l;            ///< output1, left side
@@ -117,6 +121,12 @@ static void connect_port(LV2_Handle instance, uint32_t port, void *data) {
         case BRT_BLEND:
             self->ctl_blend = data;
             break;
+        case BRT_LENGTH:
+            self->ctl_length = data;
+            break;
+        case BRT_FADE:
+            self->ctl_fade = data;
+            break;
         case BRT_TRIGGER:
             self->ctl_trigger = data;
             break;
@@ -173,7 +183,11 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
     int n_loop_samples = self->n_loop_samples;
     int listening = self->listening;
     int looping = self->looping;
+
     float ctl_blend = *self->ctl_blend;
+    float ctl_length = *self->ctl_length;
+    float ctl_fade = *self->ctl_fade;
+    int rate = self->rate;
 
     // Now listen
     if (*(self->ctl_trigger) > 0 && !listening) {
@@ -212,25 +226,47 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
         float wet_s_r = 0; // Wet sample right
         float coeff = 1.0f;
         if (listening && !looping) {
+            // only change buffer/fade length if we haven't written anything yet
+            if (pos_w == 0) {
+               // First some sane defaults
+               if (ctl_length < 100 || ctl_length > 1000)
+                  ctl_length = 100;
+
+               if (ctl_fade < 10 || ctl_length > 50)
+                  ctl_fade = 10;
+
+               n_loop_samples = ceil((float)rate * ctl_length / 1000);
+               n_fade_samples = ceil((float)n_loop_samples * ctl_fade / 100);
+            }
+
+            // We need to fill the loop buffer
             if (pos_w < n_loop_samples) {
+
+                // Still need to fade in
                 if (pos_w < n_fade_samples) {
                     coeff = 1.0f/n_fade_samples * pos_w;
                 }
                 else if (pos_w >= n_loop_samples - n_fade_samples) {
+                    // ...and here's the fade out
                     coeff = 1.0f/n_fade_samples * (n_loop_samples-1 - pos_w);
                 }
 
+                // Copy to buffer times coeff
                 self->buffer_l[pos_w] = cur_s_l * coeff;
                 self->buffer_r[pos_w] = cur_s_r * coeff;
                 ++pos_w;
             }
             else {
+                // Buffer full, reset pos_w for possible next trigger and move
+                // to state looping
                 listening = false;
                 looping = true;
                 pos_w = 0;
             }
         }
         else if (looping) {
+            // Yay, we're looping
+
             // buffer size - fade offset needs a crossfade
             if (pos_r >= n_loop_samples - n_fade_samples && !listening) {
                 int p = pos_r - (n_loop_samples - n_fade_samples); 
@@ -254,6 +290,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                 }
             }
         }
+
+        // Blending
         self->output_l[i] = cur_s_l * dry_gain +  wet_s_l * wet_gain;
         self->output_r[i] = cur_s_r * dry_gain +  wet_s_r * wet_gain;
     }
