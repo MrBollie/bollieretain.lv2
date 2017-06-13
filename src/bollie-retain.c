@@ -236,7 +236,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                   ctl_fade = 10;
 
                n_loop_samples = floor(rate * ctl_length / 1000);
-               n_fade_samples = floor(n_loop_samples * ctl_fade / 100);
+               n_fade_samples = floor(n_loop_samples * ctl_fade);
             }
 
             // We need to fill the loop buffer
@@ -268,16 +268,16 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
             // Yay, we're looping
 
             // buffer size - fade offset needs a crossfade
-            /*if (pos_r >= n_loop_samples - n_fade_samples && !listening) {
+            if (pos_r >= n_loop_samples - n_fade_samples && !listening) {
                 int p = pos_r - (n_loop_samples - n_fade_samples); 
                 wet_s_l = self->buffer_l[pos_r] + self->buffer_l[p];
                 wet_s_r = self->buffer_r[pos_r] + self->buffer_r[p];
             }
-            else { */
+            else {
                 // Simply copy
                 wet_s_l = self->buffer_l[pos_r];
                 wet_s_r = self->buffer_r[pos_r];
-            //}
+            }
             ++pos_r;
             // reset to fade offset at the end of the buffer
             if (pos_r >= n_loop_samples) {
