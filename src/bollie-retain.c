@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <sys/time.h>
+#include <stdio.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
@@ -236,7 +237,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                   ctl_fade = 10;
 
                n_loop_samples = floor(rate * ctl_length / 1000);
-               n_fade_samples = floor(n_loop_samples * ctl_fade);
+               n_fade_samples = floor(n_loop_samples * (ctl_fade/100));
             }
 
             // We need to fill the loop buffer
