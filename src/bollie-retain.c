@@ -187,7 +187,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
     float ctl_blend = *self->ctl_blend;
     float ctl_length = *self->ctl_length;
     float ctl_fade = *self->ctl_fade;
-    int rate = self->rate;
+    double rate = self->rate;
 
     // Now listen
     if (*(self->ctl_trigger) > 0 && !listening) {
@@ -235,8 +235,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                if (ctl_fade < 10 || ctl_length > 50)
                   ctl_fade = 10;
 
-               n_loop_samples = floor((float)rate * ctl_length / 1000);
-               n_fade_samples = floor((float)n_loop_samples * ctl_fade / 100);
+               n_loop_samples = floor(rate * (float)ctl_length / 1000);
+               n_fade_samples = floor(n_loop_samples * (float)ctl_fade / 100);
             }
 
             // We need to fill the loop buffer
