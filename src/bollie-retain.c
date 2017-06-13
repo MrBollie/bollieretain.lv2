@@ -235,8 +235,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                if (ctl_fade < 10 || ctl_length > 50)
                   ctl_fade = 10;
 
-               n_loop_samples = ceil((float)rate * ctl_length / 1000);
-               n_fade_samples = ceil((float)n_loop_samples * ctl_fade / 100);
+               n_loop_samples = floor((float)rate * ctl_length / 1000);
+               n_fade_samples = floor((float)n_loop_samples * ctl_fade / 100);
             }
 
             // We need to fill the loop buffer
@@ -295,6 +295,8 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
         self->output_l[i] = cur_s_l * dry_gain +  wet_s_l * wet_gain;
         self->output_r[i] = cur_s_r * dry_gain +  wet_s_r * wet_gain;
     }
+    self->n_loop_samples = n_loop_samples;
+    self->n_fade_samples = n_fade_samples;
     self->pos_w = pos_w;
     self->pos_r = pos_r;
     self->dry_gain = dry_gain;
