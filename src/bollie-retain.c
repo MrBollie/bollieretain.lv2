@@ -232,11 +232,11 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                // First some sane defaults
                if (ctl_length < 100 || ctl_length > 1000)
                   ctl_length = 100;
-
+/*
                if (ctl_fade < 10 || ctl_fade > 50)
                   ctl_fade = 10;
-
-               n_loop_samples = floor(rate * ctl_length / 1000);
+*/
+               n_loop_samples = ceil(rate * ctl_length / 1000);
                n_fade_samples = floor(n_loop_samples * (ctl_fade/100));
             }
 
