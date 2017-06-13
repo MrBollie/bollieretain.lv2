@@ -249,7 +249,7 @@ static void run(LV2_Handle instance, uint32_t n_samples) {
                 }
                 else if (pos_w >= n_loop_samples - n_fade_samples) {
                     // ...and here's the fade out
-                    coeff = 1.0f/n_fade_samples * (n_loop_samples-1 - pos_w);
+                    coeff = 1.0f/n_fade_samples * (n_loop_samples - pos_w);
                 }
 
                 // Copy to buffer times coeff
